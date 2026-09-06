@@ -1,5 +1,7 @@
 # Posta on Railway
 
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/posta?referralCode=ZqgrJ0)
+
 A Railway deployment of [Posta](https://github.com/goposta/posta), a self-hosted email delivery platform — a REST send API, templates, campaigns, tracking, and webhooks with a Vue dashboard — deployed with a dedicated background worker, Railway-managed PostgreSQL 18, and Redis 8.
 
 ![Posta](assets/posta-icon.png)
