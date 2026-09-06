@@ -1,6 +1,6 @@
 # Posta on Railway
 
-A Railway deployment of [Posta](https://github.com/goposta/posta), a self-hosted email delivery platform — a REST send API, templates, campaigns, tracking, and webhooks with a Vue dashboard — deployed with a dedicated background worker, Railway PostgreSQL, and Railway Redis.
+A Railway deployment of [Posta](https://github.com/goposta/posta), a self-hosted email delivery platform — a REST send API, templates, campaigns, tracking, and webhooks with a Vue dashboard — deployed with a dedicated background worker, Railway-managed PostgreSQL 18, and Redis 8.
 
 ![Posta](assets/posta-icon.png)
 
@@ -10,16 +10,17 @@ A Railway deployment of [Posta](https://github.com/goposta/posta), a self-hosted
 |---|---|---|
 | Posta server | HTTP API on port 9000, dashboard, `GET /healthz` | Railway HTTPS domain |
 | Posta worker | Asynq consumer: delivery, retries, campaigns, scheduled jobs, webhook fan-out | Private only |
-| PostgreSQL 17 | Emails, templates, contacts, subscribers, logs, migrations | Private only |
-| Redis 7 | Asynq queues and scheduler state | Private only |
+| Railway PostgreSQL 18 | Emails, templates, contacts, subscribers, logs, migrations | Private only |
+| Railway Redis 8 | Asynq queues and scheduler state | Private only |
 
 The server and worker are stateless and share all state through PostgreSQL and Redis, matching upstream's recommended production layout. No custom Dockerfiles or process adapters are needed: Posta is fully configured through environment variables, so every service uses an official image.
 
 ## Pinned versions
 
 - Posta `0.14.0` — `jkaninda/posta:0.14.0`, image index digest `sha256:8cee61195ba4359d5e3d2e4ce385ec33f368deaefdc10f9a1225aaf0a6816c0e`
-- PostgreSQL `17-alpine` — image index digest `sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73`
-- Redis `7-alpine` — image index digest `sha256:ff02b58f971e7d7d156a1267e283fcbbeee91773b6aa36c49dac28ecfe28eadf`
+- PostgreSQL — `ghcr.io/railwayapp-templates/postgres-ssl:18` (Railway-managed image), image index digest `sha256:469c779c7c57ec6bad4670a0a3cb5a830aa6e0ce4f3707137608de5223a5041c`
+- Redis — `redis:8.2`, image index digest `sha256:7d1e4ce8b9395088377ab382d1f6cfdbd13b3690795198a0399ab8d683064d6d`
+- Railway-managed PostgreSQL and Redis volumes carry daily backup schedules
 
 All images are pinned by tag and immutable digest. Updating this repository does not automatically update Posta; version bumps are deliberate.
 

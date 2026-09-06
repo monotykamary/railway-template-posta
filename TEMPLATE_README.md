@@ -1,6 +1,6 @@
 # Deploy and Host Posta on Railway
 
-Posta is a self-hosted email delivery platform that gives applications a REST API for sending, templating, and tracking email, with inbound parsing, SMTP relay, campaigns, and webhooks. This template deploys the pinned upstream image with a dedicated background worker, Railway PostgreSQL, and Railway Redis.
+Posta is a self-hosted email delivery platform that gives applications a REST API for sending, templating, and tracking email, with inbound parsing, SMTP relay, campaigns, and webhooks. This template deploys the pinned upstream image with a dedicated background worker, Railway-managed PostgreSQL 18, and Redis 8.
 
 ## About Hosting Posta
 
@@ -19,13 +19,13 @@ The Posta server service owns the public Railway HTTPS domain. The worker, Postg
 
 ### Deployment Dependencies
 
-- Railway PostgreSQL 17 for application state and migrations
-- Railway Redis 7 for Asynq queues and the job scheduler
+- Railway PostgreSQL 18 (`postgres-ssl`) for application state and migrations, with daily volume backups
+- Railway Redis 8 for Asynq queues and the job scheduler, persisted to a volume with daily backups
 - A Railway Pro plan for outbound SMTP delivery (see limitations)
 
 ### Implementation Details
 
-- All images are pinned by tag and immutable digest: `jkaninda/posta:0.14.0`, `postgres:17-alpine`, `redis:7-alpine`.
+- All images are pinned by tag and immutable digest: `jkaninda/posta:0.14.0`, `ghcr.io/railwayapp-templates/postgres-ssl:18`, `redis:8.2`.
 - `POSTA_JWT_SECRET`, `POSTA_ADMIN_PASSWORD`, and `POSTA_ENCRYPTION_KEY` are generated at deploy time.
 - The server and worker share `POSTA_DB_URL` and `POSTA_REDIS_URL`, built from Railway's database and Redis reference variables over private networking. Do not replace these cross-service references with literal values.
 - Health checks use `GET /healthz` on the Posta server.
