@@ -25,7 +25,7 @@ The Posta server service owns the public Railway HTTPS domain. The worker, Postg
 
 ### Implementation Details
 
-- All images are pinned by tag and immutable digest: `jkaninda/posta:0.15.1`, `ghcr.io/railwayapp-templates/postgres-ssl:18`, `redis:8.2`.
+- All images are pinned by tag and immutable digest: `jkaninda/posta:0.16.0`, `ghcr.io/railwayapp-templates/postgres-ssl:18`, `redis:8.2`.
 - `POSTA_JWT_SECRET`, `POSTA_ADMIN_PASSWORD`, and `POSTA_ENCRYPTION_KEY` are generated at deploy time.
 - The server and worker share `POSTA_DB_URL` and `POSTA_REDIS_URL`, built from Railway's database and Redis reference variables over private networking. Do not replace these cross-service references with literal values.
 - Health checks use `GET /healthz` on the Posta server.

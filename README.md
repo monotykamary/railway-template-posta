@@ -19,7 +19,7 @@ The server and worker are stateless and share all state through PostgreSQL and R
 
 ## Pinned versions
 
-- Posta `0.15.1` — `jkaninda/posta:0.15.1`, image index digest `sha256:8cee61195ba4359d5e3d2e4ce385ec33f368deaefdc10f9a1225aaf0a6816c0e`
+- Posta `0.16.0` — `jkaninda/posta:0.16.0`, image index digest `sha256:8cee61195ba4359d5e3d2e4ce385ec33f368deaefdc10f9a1225aaf0a6816c0e`
 - PostgreSQL — `ghcr.io/railwayapp-templates/postgres-ssl:18` (Railway-managed image), image index digest `sha256:469c779c7c57ec6bad4670a0a3cb5a830aa6e0ce4f3707137608de5223a5041c`
 - Redis — `redis:8.2`, image index digest `sha256:7d1e4ce8b9395088377ab382d1f6cfdbd13b3690795198a0399ab8d683064d6d`
 - Railway-managed PostgreSQL and Redis volumes carry daily backup schedules
@@ -49,7 +49,7 @@ Bump the pinned Posta tag and image digests deliberately after reviewing upstrea
 ## Sources and licensing
 
 - [Posta source](https://github.com/goposta/posta)
-- [Posta v0.15.1](https://github.com/goposta/posta/releases/tag/v0.15.1)
+- [Posta v0.16.0](https://github.com/goposta/posta/releases/tag/v0.16.0)
 - [Posta documentation](https://docs.goposta.dev/)
 
 This wrapper is MIT licensed. Posta is AGPL-3.0-or-later; the logo in `assets/` is an unchanged copy of upstream artwork and retains its upstream license. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
