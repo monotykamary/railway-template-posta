@@ -20,8 +20,8 @@ The server and worker are stateless and share all state through PostgreSQL and R
 ## Pinned versions
 
 - Reviewed update candidate: Posta `0.20.1` — `jkaninda/posta:0.20.1`, image index digest `sha256:dad937819b5828ef5f1ee8a8dc54e6932e36111681da4d850522c7790d0b493b` (publication still requires the live Railway gates)
-- PostgreSQL — `ghcr.io/railwayapp-templates/postgres-ssl:18` (Railway-managed image), image index digest `sha256:469c779c7c57ec6bad4670a0a3cb5a830aa6e0ce4f3707137608de5223a5041c`
-- Redis — `redis:8.2`, image index digest `sha256:7d1e4ce8b9395088377ab382d1f6cfdbd13b3690795198a0399ab8d683064d6d`
+- PostgreSQL — `ghcr.io/railwayapp-templates/postgres-ssl:18` (Railway-managed image), image index digest `sha256:3b8bc16ccb823c9a293b09d20d4180049502ee2b243b5989d59e258450044e22` (unchanged from the published template)
+- Redis — `redis:8.10.2`, image index digest `sha256:97ec88159e6d7cfb5ddef9015386087d58a912de80112f06ebdfa78fa5989901` (unchanged from the published template)
 - Railway-managed PostgreSQL and Redis volumes carry daily backup schedules
 
 All images are pinned by tag and immutable digest. Updating this repository does not automatically update Posta; version bumps are deliberate.
@@ -50,7 +50,7 @@ Bump the pinned Posta tag and image digests deliberately after reviewing upstrea
 
 Run `python3 scripts/smoke.py` with `BASE_URL`, `SMOKE_PHASE`, `ADMIN_EMAIL`, and `ADMIN_PASSWORD` set for an isolated test deployment. On `SMOKE_PHASE=boot`, it authenticates, creates one template, renders a known marker, and writes a private local state file. `upgrade` and `redeploy` must retrieve the same ID and content without reseeding. The check recognizes the old `name` and new `display_name` API schemas, tests rejected authentication, and records that external email delivery was not tested.
 
-The `0.16.0` to `0.20.1` migration has passed this check on boat, including the `name`/`display_name` transition, durable database state, a pre-upgrade SQL backup, and the separate worker. This is not a public Railway HTTPS or SMTP delivery proof; those remain release gates. Keep the state file private, outside source control, until validation cleanup. Release `0.18.0` introduced Enterprise feature gating; this check uses community template/render APIs and does not activate paid functionality.
+The `0.17.0` to `0.20.1` migration has passed this check on boat, including the `name`/`display_name` transition, durable database state, a pre-upgrade SQL backup, and the separate worker. This is not a public Railway HTTPS or SMTP delivery proof; those remain release gates. Keep the state file private, outside source control, until validation cleanup. Release `0.18.0` introduced Enterprise feature gating; this check uses community template/render APIs and does not activate paid functionality.
 
 ## Sources and licensing
 
