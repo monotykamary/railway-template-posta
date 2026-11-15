@@ -36,6 +36,14 @@ All images are pinned by tag and immutable digest. Updating this repository does
 
 `POSTA_JWT_SECRET`, `POSTA_ADMIN_PASSWORD`, and `POSTA_ENCRYPTION_KEY` are generated at deploy time. Do not replace cross-service database references (`POSTA_DB_HOST`, `POSTA_DB_PORT`, `POSTA_DB_NAME`, `POSTA_DB_USER`, `POSTA_DB_PASSWORD`) or `POSTA_REDIS_URL` with literal credentials.
 
+## Forwarded-IP security policy in the reviewed candidate
+
+The reviewed configuration sets `POSTA_TRUSTED_PROXIES=127.0.0.1/32,::1/128` on both server and worker. This trusts only loopback peers, **not the Railway edge**. Forwarded client-IP headers are therefore ignored for Railway requests: rate limits and audit logs see the immediate proxy IP, and multiple end users can share one rate-limit bucket. Do not rely on end-client IP allowlists or per-client IP attribution with this default.
+
+This restrictive choice avoids trusting arbitrary forwarded headers without assuming undocumented, stable Railway proxy CIDRs. Operators may supply independently verified exact proxy IPs/CIDRs if their deployment guarantees them; never use a trust-all range or invent a platform CIDR. The current upstream default (unset) trusts forwarded headers from every peer and logs an insecure-configuration warning.
+
+Release validation uses a disposable, authenticated Mailpit inbox to prove queued worker delivery. That fixture, its credentials, and its domain are **not** part of this template or its serialized defaults. Controlled synthetic delivery does not prove deliverability to public mailbox providers.
+
 ## Railway-specific limitations
 
 - **Outbound SMTP requires a Railway Pro plan.** Railway blocks outbound SMTP ports (25, 465, 587, 2525) on Free, Trial, and Hobby plans. Posta delivers email over SMTP only — it has no HTTPS API provider fallback — so on non-Pro plans the core send pipeline cannot reach your SMTP provider. On Pro it works unchanged.

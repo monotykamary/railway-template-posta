@@ -36,6 +36,14 @@ The Posta server service owns the public Railway HTTPS domain. The worker, Postg
 
 Railway provisions PostgreSQL, Redis, and private networking in one click, scales workers independently of request traffic as your send volume grows, and gives the dashboard a managed HTTPS domain immediately. The whole stack — API, worker, database, and queue — is deployable without writing Compose files or maintaining servers.
 
+## Forwarded-IP security policy in the reviewed candidate
+
+The reviewed configuration sets `POSTA_TRUSTED_PROXIES=127.0.0.1/32,::1/128` on both server and worker. This trusts only loopback peers, **not the Railway edge**. Forwarded client-IP headers are therefore ignored for Railway requests: rate limits and audit logs see the immediate proxy IP, and multiple end users can share one rate-limit bucket. Do not rely on end-client IP allowlists or per-client IP attribution with this default.
+
+This restrictive choice avoids trusting arbitrary forwarded headers without assuming undocumented, stable Railway proxy CIDRs. Operators may supply independently verified exact proxy IPs/CIDRs if their deployment guarantees them; never use a trust-all range or invent a platform CIDR. The current upstream default (unset) trusts forwarded headers from every peer and logs an insecure-configuration warning.
+
+Release validation uses a disposable, authenticated Mailpit inbox to prove queued worker delivery. That fixture, its credentials, and its domain are **not** part of this template or its serialized defaults. Controlled synthetic delivery does not prove deliverability to public mailbox providers.
+
 ## Limitations
 
 - **Outbound SMTP requires a Railway Pro plan.** Railway blocks outbound SMTP ports (25, 465, 587, 2525) on Free, Trial, and Hobby plans. Posta sends only over SMTP and has no HTTPS API provider fallback, so non-Pro plans cannot complete delivery. On Pro it works unchanged.
