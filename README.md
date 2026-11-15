@@ -34,7 +34,7 @@ All images are pinned by tag and immutable digest. Updating this repository does
 4. Add your SMTP provider in the dashboard and verify your sending domain's SPF, DKIM, and DMARC records.
 5. Optional: attach a Railway bucket and set the `POSTA_BLOB_S3_*` variables to move attachments and raw inbound messages out of the database.
 
-`POSTA_JWT_SECRET`, `POSTA_ADMIN_PASSWORD`, and `POSTA_ENCRYPTION_KEY` are generated at deploy time. Do not replace cross-service variable references (`POSTA_DB_URL`, `POSTA_REDIS_URL`) with literal values.
+`POSTA_JWT_SECRET`, `POSTA_ADMIN_PASSWORD`, and `POSTA_ENCRYPTION_KEY` are generated at deploy time. Do not replace cross-service database references (`POSTA_DB_HOST`, `POSTA_DB_PORT`, `POSTA_DB_NAME`, `POSTA_DB_USER`, `POSTA_DB_PASSWORD`) or `POSTA_REDIS_URL` with literal credentials.
 
 ## Railway-specific limitations
 

@@ -25,11 +25,11 @@ The Posta server service owns the public Railway HTTPS domain. The worker, Postg
 
 ### Implementation Details
 
-- All images are pinned by tag and immutable digest: `jkaninda/posta:0.16.0`, `ghcr.io/railwayapp-templates/postgres-ssl:18`, `redis:8.2`.
+- Reviewed candidate pins: `jkaninda/posta:0.20.1`, `ghcr.io/railwayapp-templates/postgres-ssl:18`, `redis:8.10.2`, each with an immutable digest. This draft is not a publication receipt.
 - `POSTA_JWT_SECRET`, `POSTA_ADMIN_PASSWORD`, and `POSTA_ENCRYPTION_KEY` are generated at deploy time.
-- The server and worker share `POSTA_DB_URL` and `POSTA_REDIS_URL`, built from Railway's database and Redis reference variables over private networking. Do not replace these cross-service references with literal values.
+- The server and worker share `POSTA_DB_HOST`, `POSTA_DB_PORT`, `POSTA_DB_NAME`, `POSTA_DB_USER`, `POSTA_DB_PASSWORD`, and `POSTA_REDIS_URL`, built from Railway database and Redis references over private networking. Do not replace these references with literal credentials.
 - Health checks use `GET /healthz` on the Posta server.
-- Database migrations run automatically when the server starts against an empty database.
+- Database migrations run automatically at startup. Back up before an upgrade; the 0.18 migration changes template names and drops the old slug columns.
 - Optional: attach a Railway bucket and set the `POSTA_BLOB_S3_*` variables so attachments are shared correctly if you scale the server or worker to multiple instances.
 
 ### Why Deploy Posta on Railway?
