@@ -19,7 +19,7 @@ The server and worker are stateless and share all state through PostgreSQL and R
 
 ## Pinned versions
 
-- Posta `0.16.0` — `jkaninda/posta:0.16.0`, image index digest `sha256:8cee61195ba4359d5e3d2e4ce385ec33f368deaefdc10f9a1225aaf0a6816c0e`
+- Reviewed update candidate: Posta `0.20.1` — `jkaninda/posta:0.20.1`, image index digest `sha256:dad937819b5828ef5f1ee8a8dc54e6932e36111681da4d850522c7790d0b493b` (publication still requires the live Railway gates)
 - PostgreSQL — `ghcr.io/railwayapp-templates/postgres-ssl:18` (Railway-managed image), image index digest `sha256:469c779c7c57ec6bad4670a0a3cb5a830aa6e0ce4f3707137608de5223a5041c`
 - Redis — `redis:8.2`, image index digest `sha256:7d1e4ce8b9395088377ab382d1f6cfdbd13b3690795198a0399ab8d683064d6d`
 - Railway-managed PostgreSQL and Redis volumes carry daily backup schedules
@@ -46,10 +46,16 @@ All images are pinned by tag and immutable digest. Updating this repository does
 
 Bump the pinned Posta tag and image digests deliberately after reviewing upstream release notes. Re-run live validation — startup against the existing database, worker processing, and an end-to-end SMTP delivery test — before publishing the update. Posta applies its own database migrations on startup.
 
+## Disposable product validation
+
+Run `python3 scripts/smoke.py` with `BASE_URL`, `SMOKE_PHASE`, `ADMIN_EMAIL`, and `ADMIN_PASSWORD` set for an isolated test deployment. On `SMOKE_PHASE=boot`, it authenticates, creates one template, renders a known marker, and writes a private local state file. `upgrade` and `redeploy` must retrieve the same ID and content without reseeding. The check recognizes the old `name` and new `display_name` API schemas, tests rejected authentication, and records that external email delivery was not tested.
+
+The `0.16.0` to `0.20.1` migration has passed this check on boat, including the `name`/`display_name` transition, durable database state, a pre-upgrade SQL backup, and the separate worker. This is not a public Railway HTTPS or SMTP delivery proof; those remain release gates. Keep the state file private, outside source control, until validation cleanup. Release `0.18.0` introduced Enterprise feature gating; this check uses community template/render APIs and does not activate paid functionality.
+
 ## Sources and licensing
 
 - [Posta source](https://github.com/goposta/posta)
-- [Posta v0.16.0](https://github.com/goposta/posta/releases/tag/v0.16.0)
+- [Posta v0.20.1](https://github.com/goposta/posta/releases/tag/v0.20.1)
 - [Posta documentation](https://docs.goposta.dev/)
 
 This wrapper is MIT licensed. Posta is AGPL-3.0-or-later; the logo in `assets/` is an unchanged copy of upstream artwork and retains its upstream license. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
