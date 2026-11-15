@@ -19,7 +19,7 @@ The server and worker are stateless and share all state through PostgreSQL and R
 
 ## Pinned versions
 
-- Reviewed update candidate: Posta `0.20.1` — `jkaninda/posta:0.20.1`, image index digest `sha256:dad937819b5828ef5f1ee8a8dc54e6932e36111681da4d850522c7790d0b493b` (publication still requires the live Railway gates)
+- Posta `0.20.1` — `jkaninda/posta:0.20.1`, image index digest `sha256:dad937819b5828ef5f1ee8a8dc54e6932e36111681da4d850522c7790d0b493b`
 - PostgreSQL — `ghcr.io/railwayapp-templates/postgres-ssl:18` (Railway-managed image), image index digest `sha256:3b8bc16ccb823c9a293b09d20d4180049502ee2b243b5989d59e258450044e22` (unchanged from the published template)
 - Redis — `redis:8.10.2`, image index digest `sha256:97ec88159e6d7cfb5ddef9015386087d58a912de80112f06ebdfa78fa5989901` (unchanged from the published template)
 - Railway-managed PostgreSQL and Redis volumes carry daily backup schedules
@@ -36,13 +36,19 @@ All images are pinned by tag and immutable digest. Updating this repository does
 
 `POSTA_JWT_SECRET`, `POSTA_ADMIN_PASSWORD`, and `POSTA_ENCRYPTION_KEY` are generated at deploy time. Do not replace cross-service database references (`POSTA_DB_HOST`, `POSTA_DB_PORT`, `POSTA_DB_NAME`, `POSTA_DB_USER`, `POSTA_DB_PASSWORD`) or `POSTA_REDIS_URL` with literal credentials.
 
-## Forwarded-IP security policy in the reviewed candidate
+## Forwarded-IP security policy
 
-The reviewed configuration sets `POSTA_TRUSTED_PROXIES=127.0.0.1/32,::1/128` on both server and worker. This trusts only loopback peers, **not the Railway edge**. Forwarded client-IP headers are therefore ignored for Railway requests: rate limits and audit logs see the immediate proxy IP, and multiple end users can share one rate-limit bucket. Do not rely on end-client IP allowlists or per-client IP attribution with this default.
+The template sets `POSTA_TRUSTED_PROXIES=127.0.0.1/32,::1/128` on both server and worker. This trusts only loopback peers, **not the Railway edge**. Forwarded client-IP headers are therefore ignored for Railway requests: rate limits and audit logs see the immediate proxy IP, and multiple end users can share one rate-limit bucket. Do not rely on end-client IP allowlists or per-client IP attribution with this default.
 
 This restrictive choice avoids trusting arbitrary forwarded headers without assuming undocumented, stable Railway proxy CIDRs. Operators may supply independently verified exact proxy IPs/CIDRs if their deployment guarantees them; never use a trust-all range or invent a platform CIDR. The current upstream default (unset) trusts forwarded headers from every peer and logs an insecure-configuration warning.
 
 Release validation uses a disposable, authenticated Mailpit inbox to prove queued worker delivery. That fixture, its credentials, and its domain are **not** part of this template or its serialized defaults. Controlled synthetic delivery does not prove deliverability to public mailbox providers.
+
+## Upgrade and rollback precautions
+
+Back up both PostgreSQL and Redis before upgrading and retain the generated encryption and signing secrets. The server runs database migrations at startup; the 0.18 migration changes stored template names and removes the old slug columns. Restore matching backups when rolling back rather than assuming an older binary can read the migrated schema.
+
+During a direct 0.17-to-0.20.1 upgrade, a worker started before the server finishes migrations can briefly report that the `licenses` table is absent. The reviewed upstream worker continues and reloads license state every minute. Validation retained that one startup race, verified delivery and the original stored template/API key afterward, and required no recurrence on the subsequent exact-version redeploy. Recurring errors or failed migrations are not an accepted steady state.
 
 ## Railway-specific limitations
 
